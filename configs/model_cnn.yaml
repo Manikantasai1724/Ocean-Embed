@@ -1,0 +1,27 @@
+# OceanEmbed Phase 3: Direct CNN Baseline Configuration
+
+model:
+  name: "direct_cnn"
+  in_channels: 18 # 7 surface inputs + 7 masks + 4 static (lat, lon, sin_doy, cos_doy)
+  out_channels: 15 # 15 target depth levels
+  hidden_dims: [64, 128, 128, 64]
+  kernel_size: 3
+  padding: 1
+  dropout: 0.1
+  use_residual: true
+
+training:
+  batch_size: 4
+  lr: 0.001
+  weight_decay: 0.0001
+  epochs: 15
+  patience: 4 # Early stopping patience
+  patch_size: 64
+  seed: 42
+  target_mode: "anomaly" # Predicts anomaly (T - T_clim)
+  loss: "masked_mse"
+  depth_weighting: false
+
+checkpointing:
+  save_dir: "checkpoints"
+  checkpoint_name: "direct_cnn_best.pt"
