@@ -5,7 +5,7 @@ FROM python:3.11-slim
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    PYTHONPATH=/app/src
+    PYTHONPATH=/app/src:/app
 
 WORKDIR /app
 
@@ -27,6 +27,7 @@ RUN pip install --upgrade pip && \
 
 # Copy source code, configs, tests
 COPY src/ /app/src/
+COPY api/ /app/api/
 COPY configs/ /app/configs/
 COPY tests/ /app/tests/
 COPY README.md /app/

@@ -10,7 +10,7 @@ services:
       - ./logs:/app/logs
       - ./checkpoints:/app/checkpoints
     environment:
-      - PYTHONPATH=/app/src
+      - PYTHONPATH=/app/src:/app
     ports:
       - "8000:8000"
     command: python -m unittest discover -s tests
@@ -23,9 +23,23 @@ services:
     volumes:
       - ./data:/app/data
       - ./configs:/app/configs
+      - ./checkpoints:/app/checkpoints
+    environment:
+      - PYTHONPATH=/app/src:/app
     ports:
       - "8000:8000"
-    command: uvicorn oceanembed.api.main:app --host 0.0.0.0 --port 8000
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    container_name: oceanembed_dashboard
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    command: npm run dev -- --host 0.0.0.0
 
   train:
     build:
@@ -37,4 +51,6 @@ services:
       - ./configs:/app/configs
       - ./checkpoints:/app/checkpoints
       - ./logs:/app/logs
-    command: python -m oceanembed.train.train_baselines
+    environment:
+      - PYTHONPATH=/app/src:/app
+    command: python -m oceanembed.train.train_attention
