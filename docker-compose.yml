@@ -1,0 +1,40 @@
+services:
+  oceanembed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oceanembed_app
+    volumes:
+      - ./data:/app/data
+      - ./configs:/app/configs
+      - ./logs:/app/logs
+      - ./checkpoints:/app/checkpoints
+    environment:
+      - PYTHONPATH=/app/src
+    ports:
+      - "8000:8000"
+    command: python -m unittest discover -s tests
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oceanembed_api
+    volumes:
+      - ./data:/app/data
+      - ./configs:/app/configs
+    ports:
+      - "8000:8000"
+    command: uvicorn oceanembed.api.main:app --host 0.0.0.0 --port 8000
+
+  train:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: oceanembed_train
+    volumes:
+      - ./data:/app/data
+      - ./configs:/app/configs
+      - ./checkpoints:/app/checkpoints
+      - ./logs:/app/logs
+    command: python -m oceanembed.train.train_baselines

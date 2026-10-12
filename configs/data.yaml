@@ -1,0 +1,79 @@
+# OceanEmbed Data Configuration
+# North Indian Ocean Domain & Grid Parameters
+
+domain:
+  name: "North Indian Ocean"
+  lat_min: 5.0
+  lat_max: 30.0
+  lon_min: 45.0
+  lon_max: 105.0
+  resolution: 0.25 # degrees
+
+grid:
+  # Verified dimensions:
+  # (30.0 - 5.0) / 0.25 + 1 = 101 latitude points
+  # (105.0 - 45.0) / 0.25 + 1 = 241 longitude points
+  n_lat: 101
+  n_lon: 241
+
+depths:
+  target_levels_m: [0, 5, 10, 20, 30, 50, 75, 100, 125, 150, 200, 300, 500, 700, 1000]
+  num_levels: 15
+  vertical_interpolation: "pchip" # Shape-preserving cubic Hermite interpolation
+  map_surface_level: true # Maps native GLORYS level 1 (0.494m) to 0m
+
+temporal:
+  # Full multi-year period
+  study_start: "2016-01-01"
+  study_end: "2020-12-31"
+  train_start: "2016-01-01"
+  train_end: "2018-12-31"
+  val_start: "2019-01-01"
+  val_end: "2019-12-31"
+  test_start: "2020-01-01"
+  test_end: "2020-12-31"
+  step: "1D" # Daily UTC
+
+  # Phase 1 Compact Vertical Slice (compact ~65 MB Zarr, ~550 MB raw)
+  slice_start: "2018-01-01"
+  slice_end: "2018-01-31"
+
+data_sources:
+  sst:
+    provider: "copernicus_marine"
+    dataset_id: "SST_GLO_SST_L4_REP_OBSERVATIONS_010_011"
+    variable: "analysed_sst"
+    native_res: 0.05
+    regrid_method: "area_average" # Compared with bilinear in regrid.py
+  sss:
+    provider: "copernicus_marine"
+    dataset_id: "MULTIOBS_GLO_PHY_SSS_L4_REP_015_015"
+    variable: "sos"
+    native_res: 0.125
+    regrid_method: "bilinear"
+  sla:
+    provider: "copernicus_marine"
+    dataset_id: "SEALEVEL_GLO_PHY_L4_MY_008_047"
+    variable: "sla"
+    native_res: 0.25
+    regrid_method: "nearest_or_exact"
+  currents:
+    provider: "podaac"
+    dataset_id: "OSCAR_L4_OC_FINAL_V2.0"
+    u_var: "u"
+    v_var: "v"
+    native_res: 0.25
+    regrid_method: "nearest_or_exact"
+  winds:
+    provider: "podaac_rss"
+    dataset_id: "CCMP_MEASURES_ATMO_L4_OW_L3_0_6HOURLY_V3.1"
+    u_var: "uwnd"
+    v_var: "vwnd"
+    native_res: 0.25
+    aggregation: "daily_vector_mean"
+  target_reanalysis:
+    provider: "copernicus_marine"
+    dataset_id: "GLOBAL_MULTIYEAR_PHY_001_030"
+    variable: "thetao"
+    native_res: 0.08333333333333333 # 1/12 degree
+    depth_interpolation: "pchip"
