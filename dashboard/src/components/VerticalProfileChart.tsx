@@ -1,4 +1,10 @@
-import React from 'react';
+/**
+ * VerticalProfileChart.tsx — SVG-based vertical ocean temperature sounding.
+ *
+ * Shows predicted vs truth vs climatology temperature profiles from 0–1000m.
+ * Uses a non-linear depth axis (power scale with exponent 0.6) to expand
+ * the critical upper-ocean thermocline region while still showing deep water.
+ */
 import { Compass, Anchor } from 'lucide-react';
 
 export interface ProfilePoint {
@@ -23,9 +29,9 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
   modelName,
   profile,
 }) => {
-  const svgWidth = 420;
-  const svgHeight = 460;
-  const margin = { top: 30, right: 30, bottom: 40, left: 60 };
+  const svgWidth = 400;
+  const svgHeight = 420;
+  const margin = { top: 28, right: 26, bottom: 38, left: 54 };
   const innerWidth = svgWidth - margin.left - margin.right;
   const innerHeight = svgHeight - margin.top - margin.bottom;
 
@@ -38,6 +44,7 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
     return margin.left + ((t - minTemp) / (maxTemp - minTemp)) * innerWidth;
   };
 
+  // Non-linear depth scale: expands upper-ocean detail
   const scaleY = (depth: number) => {
     const depthFrac = Math.pow(depth / maxDepth, 0.6);
     return margin.top + depthFrac * innerHeight;
@@ -47,18 +54,14 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
   const validTruth = profile.filter(p => p.truth_temp !== null);
   const validClim = profile.filter(p => p.climatology_temp !== null);
 
-  const predPath = validPreds
-    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(p.predicted_temp!)} ${scaleY(p.depth_m)}`)
-    .join(' ');
+  const makePath = (points: { temp: number; depth: number }[]) =>
+    points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(p.temp)} ${scaleY(p.depth)}`).join(' ');
 
-  const truthPath = validTruth
-    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(p.truth_temp!)} ${scaleY(p.depth_m)}`)
-    .join(' ');
+  const predPath = makePath(validPreds.map(p => ({ temp: p.predicted_temp!, depth: p.depth_m })));
+  const truthPath = makePath(validTruth.map(p => ({ temp: p.truth_temp!, depth: p.depth_m })));
+  const climPath = makePath(validClim.map(p => ({ temp: p.climatology_temp!, depth: p.depth_m })));
 
-  const climPath = validClim
-    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${scaleX(p.climatology_temp!)} ${scaleY(p.depth_m)}`)
-    .join(' ');
-
+  // Estimate Mixed Layer Depth (threshold: ΔT > 0.2°C from surface)
   let mld_m = 35;
   if (validTruth.length > 1 && validTruth[0].truth_temp !== null) {
     const sst = validTruth[0].truth_temp!;
@@ -70,217 +73,176 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
     }
   }
 
-  const thermoclineY = scaleY(75);
-
   return (
-    <div className="glass-panel" style={{ padding: '20px 24px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+    <div className="glass-panel fade-in" style={{ padding: '16px 18px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
         <div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Vertical Sounding Profile (0–1000m)
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
+            Vertical Sounding
           </div>
-          <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Compass size={18} color="var(--cyan-glow)" />
-            <span>{coord.lat.toFixed(2)}°N, {coord.lon.toFixed(2)}°E</span>
+          <div style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Compass size={15} color="var(--cyan-glow)" />
+            {coord.lat.toFixed(2)}°N, {coord.lon.toFixed(2)}°E
           </div>
         </div>
-
-        <div style={{
-          background: 'rgba(255, 255, 255, 0.04)',
-          border: '1px solid var(--border-subtle)',
-          padding: '4px 10px',
-          borderRadius: '8px',
-          fontSize: '0.75rem',
-          fontFamily: 'var(--font-mono)',
-          color: 'var(--cyan-muted)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          <Anchor size={14} />
-          <span>{isOcean && seafloorDepth > 0 ? `Seafloor: ${seafloorDepth}m` : 'Land Point'}</span>
+        <div className="badge badge-cyan" style={{ fontSize: '0.65rem' }}>
+          <Anchor size={10} />
+          {isOcean && seafloorDepth > 0 ? `${seafloorDepth}m` : 'Land'}
         </div>
       </div>
 
-      <div style={{ flex: 1, position: 'relative', minHeight: '340px' }}>
+      {/* SVG Chart */}
+      <div style={{ flex: 1, position: 'relative', minHeight: '300px' }}>
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
           className="profile-chart-svg"
           style={{ width: '100%', height: '100%' }}
         >
-          {[5, 10, 15, 20, 25, 30].map(temp => (
-            <g key={temp}>
-              <line
-                x1={scaleX(temp)}
-                y1={margin.top}
-                x2={scaleX(temp)}
-                y2={margin.top + innerHeight}
-                stroke="rgba(255, 255, 255, 0.06)"
-                strokeDasharray="3 3"
-              />
-              <text
-                x={scaleX(temp)}
-                y={margin.top + innerHeight + 20}
-                fill="var(--text-muted)"
-                fontSize="10"
-                fontFamily="var(--font-mono)"
-                textAnchor="middle"
-              >
-                {temp}°C
-              </text>
-            </g>
-          ))}
+          {/* Defs for gradients */}
+          <defs>
+            <linearGradient id="pred-glow" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#00f0ff" stopOpacity="0" />
+            </linearGradient>
+          </defs>
 
-          {[0, 20, 50, 75, 100, 200, 500, 1000].map(depth => (
-            <g key={depth}>
-              <line
-                x1={margin.left}
-                y1={scaleY(depth)}
-                x2={margin.left + innerWidth}
-                y2={scaleY(depth)}
-                stroke="rgba(255, 255, 255, 0.06)"
-                strokeDasharray="2 2"
-              />
-              <text
-                x={margin.left - 8}
-                y={scaleY(depth) + 4}
-                fill="var(--text-muted)"
-                fontSize="10"
-                fontFamily="var(--font-mono)"
-                textAnchor="end"
-              >
-                {depth}m
-              </text>
-            </g>
-          ))}
-
+          {/* Background fill areas */}
+          {/* Thermocline zone highlight */}
           <rect
             x={margin.left}
             y={scaleY(50)}
             width={innerWidth}
-            height={scaleY(150) - scaleY(50)}
-            fill="rgba(255, 183, 3, 0.05)"
-            stroke="rgba(255, 183, 3, 0.15)"
+            height={scaleY(200) - scaleY(50)}
+            fill="rgba(255, 183, 3, 0.03)"
+            stroke="rgba(255, 183, 3, 0.1)"
             strokeDasharray="4 4"
+            rx="4"
           />
+
+          {/* Grid lines: Temperature */}
+          {[5, 10, 15, 20, 25, 30].map(temp => (
+            <g key={`temp-${temp}`}>
+              <line
+                x1={scaleX(temp)} y1={margin.top}
+                x2={scaleX(temp)} y2={margin.top + innerHeight}
+                stroke="rgba(255, 255, 255, 0.04)"
+                strokeDasharray="2 3"
+              />
+              <text
+                x={scaleX(temp)} y={margin.top + innerHeight + 18}
+                fill="var(--text-muted)" fontSize="9" fontFamily="var(--font-mono)" textAnchor="middle"
+              >
+                {temp}°
+              </text>
+            </g>
+          ))}
+
+          {/* Grid lines: Depth */}
+          {[0, 20, 50, 75, 100, 200, 500, 1000].map(depth => (
+            <g key={`depth-${depth}`}>
+              <line
+                x1={margin.left} y1={scaleY(depth)}
+                x2={margin.left + innerWidth} y2={scaleY(depth)}
+                stroke="rgba(255, 255, 255, 0.04)"
+                strokeDasharray="2 3"
+              />
+              <text
+                x={margin.left - 6} y={scaleY(depth) + 3}
+                fill="var(--text-muted)" fontSize="9" fontFamily="var(--font-mono)" textAnchor="end"
+              >
+                {depth}
+              </text>
+            </g>
+          ))}
+
+          {/* Thermocline label */}
           <text
-            x={margin.left + innerWidth - 8}
-            y={thermoclineY + 3}
-            fill="rgba(255, 183, 3, 0.7)"
-            fontSize="9"
-            fontFamily="var(--font-mono)"
-            textAnchor="end"
+            x={margin.left + innerWidth - 6} y={scaleY(75) + 3}
+            fill="rgba(255, 183, 3, 0.5)" fontSize="8" fontFamily="var(--font-mono)" textAnchor="end"
           >
-            Thermocline Core
+            Thermocline
           </text>
 
+          {/* Data lines */}
+          {/* Climatology (dashed grey, background) */}
           {climPath && (
-            <path
-              d={climPath}
-              fill="none"
-              stroke="#64748b"
-              strokeWidth="1.5"
-              strokeDasharray="3 3"
-              opacity="0.8"
-            />
+            <path d={climPath} fill="none" stroke="#475569" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.7" />
           )}
 
+          {/* GLORYS Truth (dashed coral) */}
           {truthPath && (
-            <path
-              d={truthPath}
-              fill="none"
-              stroke="#ff006e"
-              strokeWidth="2.5"
-              strokeDasharray="5 3"
-            />
+            <path d={truthPath} fill="none" stroke="#ff006e" strokeWidth="2" strokeDasharray="5 3" opacity="0.9" />
           )}
 
+          {/* Prediction (solid cyan with glow) */}
           {predPath && (
             <path
               d={predPath}
               fill="none"
               stroke="#00f0ff"
-              strokeWidth="3"
-              style={{ filter: 'drop-shadow(0 0 6px rgba(0, 240, 255, 0.5))' }}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              style={{ filter: 'drop-shadow(0 0 4px rgba(0, 240, 255, 0.5))' }}
             />
           )}
 
+          {/* Data point markers */}
           {validPreds.map(p => (
-            <g key={p.depth_m}>
-              <circle
-                cx={scaleX(p.predicted_temp!)}
-                cy={scaleY(p.depth_m)}
-                r="3.5"
-                fill="#ffffff"
-                stroke="#00f0ff"
-                strokeWidth="2"
-              />
-            </g>
+            <circle
+              key={p.depth_m}
+              cx={scaleX(p.predicted_temp!)}
+              cy={scaleY(p.depth_m)}
+              r="3"
+              fill="#ffffff"
+              stroke="#00f0ff"
+              strokeWidth="1.5"
+            />
           ))}
 
+          {/* Axis labels */}
           <text
-            x={margin.left + innerWidth / 2}
-            y={svgHeight - 6}
-            fill="var(--text-secondary)"
-            fontSize="11"
-            fontFamily="var(--font-sans)"
-            textAnchor="middle"
-            fontWeight="600"
+            x={margin.left + innerWidth / 2} y={svgHeight - 4}
+            fill="var(--text-secondary)" fontSize="10" fontFamily="var(--font-sans)" textAnchor="middle" fontWeight="600"
           >
             Temperature (°C)
           </text>
-
           <text
-            transform={`rotate(-90)`}
-            x={-(margin.top + innerHeight / 2)}
-            y={18}
-            fill="var(--text-secondary)"
-            fontSize="11"
-            fontFamily="var(--font-sans)"
-            textAnchor="middle"
-            fontWeight="600"
+            transform="rotate(-90)"
+            x={-(margin.top + innerHeight / 2)} y={14}
+            fill="var(--text-secondary)" fontSize="10" fontFamily="var(--font-sans)" textAnchor="middle" fontWeight="600"
           >
             Depth (m) ↓
           </text>
         </svg>
       </div>
 
-      <div style={{ marginTop: '12px', borderTop: '1px solid var(--border-subtle)', paddingTop: '12px' }}>
-        <div style={{ display: 'flex', gap: '16px', fontSize: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '12px', height: '3px', background: 'var(--cyan-glow)', borderRadius: '2px' }} />
+      {/* Legend */}
+      <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '10px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', gap: '14px', fontSize: '0.7rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span style={{ width: '14px', height: '2.5px', background: '#00f0ff', borderRadius: '2px', boxShadow: '0 0 4px rgba(0,240,255,0.5)' }} />
             <span style={{ color: '#ffffff', fontWeight: 600 }}>{modelName}</span>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '12px', height: '3px', background: 'var(--coral-hot)', borderRadius: '2px' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span style={{ width: '14px', height: '2px', background: '#ff006e', borderRadius: '1px' }} />
             <span style={{ color: 'var(--coral-hot)' }}>GLORYS Truth</span>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '12px', height: '2px', background: '#64748b', borderRadius: '1px' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span style={{ width: '14px', height: '1.5px', background: '#475569', borderRadius: '1px' }} />
             <span style={{ color: 'var(--text-muted)' }}>Climatology</span>
           </div>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '8px',
-          marginTop: '10px',
-          background: 'rgba(255, 255, 255, 0.02)',
-          padding: '8px 12px',
-          borderRadius: '8px',
-          fontSize: '0.75rem',
-          fontFamily: 'var(--font-mono)'
-        }}>
-          <div>
-            <span style={{ color: 'var(--text-muted)' }}>Mixed Layer Depth: </span>
-            <strong style={{ color: 'var(--cyan-glow)' }}>~{mld_m}m</strong>
+        {/* Physical metrics */}
+        <div className="grid-2" style={{ marginTop: '8px' }}>
+          <div className="stat-card" style={{ padding: '6px 10px' }}>
+            <div className="stat-card-label" style={{ fontSize: '0.6rem' }}>Mixed Layer</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--cyan-glow)' }}>~{mld_m}m</div>
           </div>
-          <div>
-            <span style={{ color: 'var(--text-muted)' }}>Thermocline Gradient: </span>
-            <strong style={{ color: 'var(--amber-warn)' }}>-0.15°C/m</strong>
+          <div className="stat-card" style={{ padding: '6px 10px' }}>
+            <div className="stat-card-label" style={{ fontSize: '0.6rem' }}>Thermo. Gradient</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--amber-warn)' }}>-0.15°C/m</div>
           </div>
         </div>
       </div>
