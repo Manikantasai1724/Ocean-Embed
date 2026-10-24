@@ -81,12 +81,12 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
           <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>
             Vertical Sounding
           </div>
-          <div style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Compass size={15} color="var(--cyan-glow)" />
+          <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-heading)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Compass size={15} color="var(--primary)" />
             {coord.lat.toFixed(2)}°N, {coord.lon.toFixed(2)}°E
           </div>
         </div>
-        <div className="badge badge-cyan" style={{ fontSize: '0.65rem' }}>
+        <div className="badge badge-magenta" style={{ fontSize: '0.65rem' }}>
           <Anchor size={10} />
           {isOcean && seafloorDepth > 0 ? `${seafloorDepth}m` : 'Land'}
         </div>
@@ -102,8 +102,8 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
           {/* Defs for gradients */}
           <defs>
             <linearGradient id="pred-glow" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#00f0ff" stopOpacity="0" />
+              <stop offset="0%" stopColor="#890149" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#890149" stopOpacity="0" />
             </linearGradient>
           </defs>
 
@@ -114,8 +114,8 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
             y={scaleY(50)}
             width={innerWidth}
             height={scaleY(200) - scaleY(50)}
-            fill="rgba(255, 183, 3, 0.03)"
-            stroke="rgba(255, 183, 3, 0.1)"
+            fill="rgba(137, 1, 73, 0.04)"
+            stroke="rgba(137, 1, 73, 0.20)"
             strokeDasharray="4 4"
             rx="4"
           />
@@ -126,7 +126,7 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
               <line
                 x1={scaleX(temp)} y1={margin.top}
                 x2={scaleX(temp)} y2={margin.top + innerHeight}
-                stroke="rgba(255, 255, 255, 0.04)"
+                stroke="var(--border-subtle)"
                 strokeDasharray="2 3"
               />
               <text
@@ -144,7 +144,7 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
               <line
                 x1={margin.left} y1={scaleY(depth)}
                 x2={margin.left + innerWidth} y2={scaleY(depth)}
-                stroke="rgba(255, 255, 255, 0.04)"
+                stroke="var(--border-subtle)"
                 strokeDasharray="2 3"
               />
               <text
@@ -159,31 +159,31 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
           {/* Thermocline label */}
           <text
             x={margin.left + innerWidth - 6} y={scaleY(75) + 3}
-            fill="rgba(255, 183, 3, 0.5)" fontSize="8" fontFamily="var(--font-mono)" textAnchor="end"
+            fill="var(--text-muted)" fontSize="8" fontFamily="var(--font-mono)" textAnchor="end"
           >
             Thermocline
           </text>
 
           {/* Data lines */}
-          {/* Climatology (dashed grey, background) */}
+          {/* Climatology (dashed muted magenta, background) */}
           {climPath && (
-            <path d={climPath} fill="none" stroke="#475569" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.7" />
+            <path d={climPath} fill="none" stroke="#8c426b" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.75" />
           )}
 
-          {/* GLORYS Truth (dashed coral) */}
+          {/* GLORYS Truth (dashed deep wine) */}
           {truthPath && (
-            <path d={truthPath} fill="none" stroke="#ff006e" strokeWidth="2" strokeDasharray="5 3" opacity="0.9" />
+            <path d={truthPath} fill="none" stroke="#38001d" strokeWidth="2" strokeDasharray="5 3" opacity="0.9" />
           )}
 
-          {/* Prediction (solid cyan with glow) */}
+          {/* Prediction (solid deep magenta with glow) */}
           {predPath && (
             <path
               d={predPath}
               fill="none"
-              stroke="#00f0ff"
+              stroke="#890149"
               strokeWidth="2.5"
               strokeLinecap="round"
-              style={{ filter: 'drop-shadow(0 0 4px rgba(0, 240, 255, 0.5))' }}
+              style={{ filter: 'drop-shadow(0 0 5px rgba(137, 1, 73, 0.45))' }}
             />
           )}
 
@@ -193,9 +193,9 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
               key={p.depth_m}
               cx={scaleX(p.predicted_temp!)}
               cy={scaleY(p.depth_m)}
-              r="3"
-              fill="#ffffff"
-              stroke="#00f0ff"
+              r="3.5"
+              fill="#F3F3E7"
+              stroke="#890149"
               strokeWidth="1.5"
             />
           ))}
@@ -221,15 +221,15 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
       <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '10px', marginTop: '8px' }}>
         <div style={{ display: 'flex', gap: '14px', fontSize: '0.7rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '14px', height: '2.5px', background: '#00f0ff', borderRadius: '2px', boxShadow: '0 0 4px rgba(0,240,255,0.5)' }} />
-            <span style={{ color: '#ffffff', fontWeight: 600 }}>{modelName}</span>
+            <span style={{ width: '14px', height: '2.5px', background: '#890149', borderRadius: '2px', boxShadow: '0 0 4px rgba(137,1,73,0.5)' }} />
+            <span style={{ color: 'var(--text-heading)', fontWeight: 600 }}>{modelName}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '14px', height: '2px', background: '#ff006e', borderRadius: '1px' }} />
-            <span style={{ color: 'var(--coral-hot)' }}>GLORYS Truth</span>
+            <span style={{ width: '14px', height: '2px', background: '#38001d', borderRadius: '1px' }} />
+            <span style={{ color: 'var(--text-secondary)' }}>GLORYS Truth</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '14px', height: '1.5px', background: '#475569', borderRadius: '1px' }} />
+            <span style={{ width: '14px', height: '1.5px', background: '#8c426b', borderRadius: '1px' }} />
             <span style={{ color: 'var(--text-muted)' }}>Climatology</span>
           </div>
         </div>
@@ -238,11 +238,11 @@ export const VerticalProfileChart: React.FC<VerticalProfileChartProps> = ({
         <div className="grid-2" style={{ marginTop: '8px' }}>
           <div className="stat-card" style={{ padding: '6px 10px' }}>
             <div className="stat-card-label" style={{ fontSize: '0.6rem' }}>Mixed Layer</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--cyan-glow)' }}>~{mld_m}m</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--primary)' }}>~{mld_m}m</div>
           </div>
           <div className="stat-card" style={{ padding: '6px 10px' }}>
             <div className="stat-card-label" style={{ fontSize: '0.6rem' }}>Thermo. Gradient</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--amber-warn)' }}>-0.15°C/m</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--primary)' }}>-0.15°C/m</div>
           </div>
         </div>
       </div>

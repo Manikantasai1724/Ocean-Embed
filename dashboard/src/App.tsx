@@ -24,6 +24,12 @@ export function App() {
   const [viewMode, setViewMode] = useState<'single' | 'compare'>('single');
   const [isMetricsOpen, setIsMetricsOpen] = useState<boolean>(false);
   const [isApiOnline, setIsApiOnline] = useState<boolean>(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  // Synchronize data-theme on html element for full system CSS switching
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   // Grid and Metadata state
   const [latitudes, setLatitudes] = useState<number[]>([]);
@@ -190,6 +196,8 @@ export function App() {
       <TopBar
         isApiOnline={isApiOnline}
         onOpenMetrics={() => setIsMetricsOpen(true)}
+        theme={theme}
+        onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
       />
 
       {/* ═══ SIDEBAR ═══ */}
@@ -216,11 +224,11 @@ export function App() {
                   <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Horizontal Slice · 0.25° × 0.25°
                   </div>
-                  <div style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff' }}>
-                    <span style={{ color: 'var(--cyan-glow)' }}>{displayModelName}</span> · {depth_m}m
+                  <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-heading)' }}>
+                    <span style={{ color: 'var(--primary)' }}>{displayModelName}</span> · {depth_m}m
                   </div>
                 </div>
-                <div className="badge badge-teal">RMSE {rmse.toFixed(3)}°C</div>
+                <div className="badge badge-magenta">RMSE {rmse.toFixed(3)}°C</div>
               </div>
               <LeafletMap
                 predictionGrid={predictionGrid}
@@ -230,6 +238,7 @@ export function App() {
                 modelName={displayModelName}
                 pinnedCoord={pinnedCoord}
                 onPinCoord={(lat, lon) => setPinnedCoord({ lat, lon })}
+                theme={theme}
               />
             </div>
 

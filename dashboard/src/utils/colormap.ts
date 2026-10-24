@@ -1,7 +1,8 @@
 /**
  * Oceanographic Colormap Utilities for OceanEmbed
- * Maps temperature in °C (4°C to 32°C) to RGB values.
- * Uses a smooth ocean thermal colormap (purple/dark blue -> cyan -> yellow -> coral/red).
+ * Strictly mapped to:
+ * - Color 1: Alabaster (#F3F3E7 / rgb(243, 243, 231)) - Warm Neutral
+ * - Color 2: Deep Magenta (#890149 / rgb(137, 1, 73)) - Rich Jewel Tone
  */
 
 export interface RGB {
@@ -13,41 +14,41 @@ export interface RGB {
 export function getThermalColor(val: number, min: number = 4.0, max: number = 31.0): RGB {
   if (isNaN(val) || val === null) {
     // Land mask / subterranean
-    return { r: 15, g: 23, b: 42 }; // Dark slate land
+    return { r: 50, g: 1, b: 27 };
   }
 
   // Normalize to [0, 1]
   const t = Math.max(0, Math.min(1, (val - min) / Math.max(1e-4, max - min)));
 
-  // 5-stop thermal gradient
-  // 0.0: Deep cold abyss (#1d1145 - 29, 17, 69)
-  // 0.25: Cool sub-thermocline (#25567b - 37, 86, 123)
-  // 0.5: Mild thermocline (#00b4d8 - 0, 180, 216)
-  // 0.75: Warm surface (#ffb703 - 255, 183, 3)
-  // 1.0: Hot tropical surface (#ff006e - 255, 0, 110)
+  // Thermal Gradient strictly from Deep Magenta to Alabaster:
+  // 0.0: Abyss (#38001d - 56, 0, 29)
+  // 0.3: Deep water (#890149 - 137, 1, 73) [Deep Magenta]
+  // 0.6: Thermocline (#b82d77 - 184, 45, 119)
+  // 0.85: Upper ocean (#e096bf - 224, 150, 191)
+  // 1.0: Warm surface (#F3F3E7 - 243, 243, 231) [Alabaster]
 
   let r = 0, g = 0, b = 0;
 
-  if (t < 0.25) {
-    const s = t / 0.25;
-    r = 29 + s * (37 - 29);
-    g = 17 + s * (86 - 17);
-    b = 69 + s * (123 - 69);
-  } else if (t < 0.5) {
-    const s = (t - 0.25) / 0.25;
-    r = 37 + s * (0 - 37);
-    g = 86 + s * (180 - 86);
-    b = 123 + s * (216 - 123);
-  } else if (t < 0.75) {
-    const s = (t - 0.5) / 0.25;
-    r = 0 + s * (255 - 0);
-    g = 180 + s * (183 - 180);
-    b = 216 + s * (3 - 216);
+  if (t < 0.3) {
+    const s = t / 0.3;
+    r = 56 + s * (137 - 56);
+    g = 0 + s * (1 - 0);
+    b = 29 + s * (73 - 29);
+  } else if (t < 0.6) {
+    const s = (t - 0.3) / 0.3;
+    r = 137 + s * (184 - 137);
+    g = 1 + s * (45 - 1);
+    b = 73 + s * (119 - 73);
+  } else if (t < 0.85) {
+    const s = (t - 0.6) / 0.25;
+    r = 184 + s * (224 - 184);
+    g = 45 + s * (150 - 45);
+    b = 119 + s * (191 - 119);
   } else {
-    const s = (t - 0.75) / 0.25;
-    r = 255 + s * (255 - 255);
-    g = 183 + s * (0 - 183);
-    b = 3 + s * (110 - 3);
+    const s = (t - 0.85) / 0.15;
+    r = 224 + s * (243 - 224);
+    g = 150 + s * (243 - 150);
+    b = 191 + s * (231 - 191);
   }
 
   return { r: Math.round(r), g: Math.round(g), b: Math.round(b) };
@@ -55,23 +56,23 @@ export function getThermalColor(val: number, min: number = 4.0, max: number = 31
 
 export function getErrorColor(val: number, maxAbsErr: number = 1.5): RGB {
   if (isNaN(val) || val === null) {
-    return { r: 15, g: 23, b: 42 };
+    return { r: 50, g: 1, b: 27 };
   }
-  // Diverging colormap: Blue (negative/cold bias) -> White/Gray (0) -> Red (positive/warm bias)
+  // Diverging colormap: Deep Magenta (-1.5) -> Alabaster Neutral (0.0) -> Saturated Magenta (+1.5)
   const norm = Math.max(-1, Math.min(1, val / maxAbsErr));
   if (norm < 0) {
     const s = -norm;
     return {
-      r: Math.round(200 - s * 170),
-      g: Math.round(200 - s * 100),
-      b: 255,
+      r: Math.round(243 - s * (243 - 137)),
+      g: Math.round(243 - s * (243 - 1)),
+      b: Math.round(231 - s * (231 - 73)),
     };
   } else {
     const s = norm;
     return {
-      r: 255,
-      g: Math.round(200 - s * 170),
-      b: Math.round(200 - s * 170),
+      r: Math.round(243 - s * (243 - 215)),
+      g: Math.round(243 - s * (243 - 40)),
+      b: Math.round(231 - s * (231 - 130)),
     };
   }
 }

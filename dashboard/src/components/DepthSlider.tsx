@@ -25,15 +25,15 @@ export const DepthSlider: React.FC<DepthSliderProps> = ({
   };
 
   let zoneName = 'Epipelagic (Mixed Layer)';
-  let zoneColor = '#00f0ff';
+  let zoneColor = '#890149';
   let zoneDesc = 'Direct solar heating & strong wind-driven turbulent mixing';
   if (currentDepth >= 50 && currentDepth <= 200) {
     zoneName = 'Main Thermocline Layer';
-    zoneColor = '#ffb703';
+    zoneColor = '#b82d77';
     zoneDesc = 'Steep vertical temperature gradient (dT/dz) & internal waves';
   } else if (currentDepth > 200) {
     zoneName = 'Mesopelagic / Deep Water';
-    zoneColor = '#3a86ff';
+    zoneColor = '#54002c';
     zoneDesc = 'Stable abyssal water masses; near-constant cold temperatures';
   }
 
@@ -42,10 +42,10 @@ export const DepthSlider: React.FC<DepthSliderProps> = ({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
-            background: 'rgba(0, 240, 255, 0.1)',
+            background: 'var(--primary-soft)',
             padding: '8px',
             borderRadius: '8px',
-            color: 'var(--cyan-glow)'
+            color: 'var(--primary)'
           }}>
             <Layers size={20} />
           </div>
@@ -53,9 +53,9 @@ export const DepthSlider: React.FC<DepthSliderProps> = ({
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Subsurface Depth Target
             </div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: '#ffffff', display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-heading)', display: 'flex', alignItems: 'baseline', gap: '6px' }}>
               <span>{currentDepth}</span>
-              <span style={{ fontSize: '0.9rem', color: 'var(--cyan-glow)', fontWeight: 500 }}>meters</span>
+              <span style={{ fontSize: '0.9rem', color: 'var(--primary)', fontWeight: 600 }}>meters</span>
             </div>
           </div>
         </div>

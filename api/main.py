@@ -10,10 +10,17 @@ Provides endpoints for interactive frontend exploration:
 """
 
 import os
+import sys
+from pathlib import Path
 import json
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+
+# Ensure 'src' directory is in sys.path when running without PYTHONPATH set
+_SRC_DIR = str(Path(__file__).resolve().parent.parent / "src")
+if _SRC_DIR not in sys.path:
+    sys.path.insert(0, _SRC_DIR)
 
 from oceanembed.infer.predict import OceanPredictor
 

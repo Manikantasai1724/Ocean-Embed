@@ -31,11 +31,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           width: '42px',
           height: '42px',
           borderRadius: '12px',
-          background: 'linear-gradient(135deg, #00f0ff 0%, #3a86ff 100%)',
+          background: 'linear-gradient(135deg, #890149 0%, #aa025b 50%, #54002c 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#050a14',
+          color: '#F3F3E7',
           boxShadow: 'var(--shadow-glow)'
         }}>
           <Waves size={24} />
@@ -43,22 +43,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h1 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#ffffff' }}>
-              Ocean<span style={{ color: 'var(--cyan-glow)' }}>Embed</span>
+            <h1 style={{ fontSize: '1.4rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-heading)' }}>
+              Ocean<span style={{ color: 'var(--primary)' }}>Embed</span>
             </h1>
-            <span className="header-badge">MoES / INCOIS</span>
-            <span style={{
-              fontSize: '0.65rem',
-              background: 'rgba(255, 0, 110, 0.1)',
-              border: '1px solid rgba(255, 0, 110, 0.3)',
-              color: 'var(--coral-hot)',
-              padding: '2px 8px',
-              borderRadius: '9999px',
-              fontWeight: 600,
-              textTransform: 'uppercase'
-            }}>
-              Disaster Management
-            </span>
+            <span className="badge badge-magenta">MoES / INCOIS</span>
+            <span className="badge badge-solid">Disaster Management</span>
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
             Satellite Embedding Deep Learning Framework for 3D Subsurface Ocean Temperature Reconstruction

@@ -2,18 +2,22 @@
  * TopBar.tsx — Minimal top navigation bar for OceanEmbed.
  *
  * Displays brand, status indicators, and action buttons.
- * All complex controls moved to the Sidebar.
+ * Strictly adheres to Alabaster (#F3F3E7) & Deep Magenta (#890149).
  */
-import { Waves, Award } from 'lucide-react';
+import { Waves, Award, Sun, Moon } from 'lucide-react';
 
 interface TopBarProps {
   isApiOnline: boolean;
   onOpenMetrics: () => void;
+  theme?: 'light' | 'dark';
+  onToggleTheme?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
   isApiOnline,
   onOpenMetrics,
+  theme = 'light',
+  onToggleTheme,
 }) => {
   return (
     <header className="topbar app-topbar">
@@ -34,13 +38,25 @@ export const TopBar: React.FC<TopBarProps> = ({
 
       {/* Center: Badges */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span className="badge badge-cyan">MoES / INCOIS</span>
-        <span className="badge badge-coral">Disaster Mgmt</span>
-        <span className="badge badge-purple">North Indian Ocean</span>
+        <span className="badge badge-magenta">MoES / INCOIS</span>
+        <span className="badge badge-solid">Disaster Mgmt</span>
+        <span className="badge badge-alabaster">North Indian Ocean</span>
       </div>
 
       {/* Right: Actions */}
       <div className="topbar-actions">
+        {onToggleTheme && (
+          <button
+            onClick={onToggleTheme}
+            className="btn-select"
+            title={`Switch to ${theme === 'light' ? 'Deep Magenta' : 'Alabaster'} mode`}
+            style={{ padding: '6px 10px', fontSize: '0.75rem' }}
+          >
+            {theme === 'light' ? <Moon size={13} /> : <Sun size={13} />}
+            <span>{theme === 'light' ? 'Jewel Dark' : 'Alabaster'}</span>
+          </button>
+        )}
+
         <button
           onClick={onOpenMetrics}
           className="btn-primary"
@@ -71,7 +87,8 @@ export const TopBar: React.FC<TopBarProps> = ({
           <span style={{
             fontSize: '0.7rem',
             fontFamily: 'var(--font-mono)',
-            color: isApiOnline ? 'var(--teal-glow)' : 'var(--amber-warn)',
+            fontWeight: 600,
+            color: 'var(--primary)',
           }}>
             {isApiOnline ? 'API Live' : 'Demo Mode'}
           </span>

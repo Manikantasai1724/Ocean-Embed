@@ -71,12 +71,12 @@ export const CompareView: React.FC<CompareViewProps> = ({
       const lonIdx = Math.round(((pinnedCoord.lon - longitudes[0]) / (longitudes[longitudes.length - 1] - longitudes[0])) * (W - 1));
       const cy = H - 1 - latIdx;
       const cx = lonIdx;
-      ctx.strokeStyle = '#ffffff';
+      ctx.strokeStyle = '#F3F3E7';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
       ctx.stroke();
-      ctx.fillStyle = '#00f0ff';
+      ctx.fillStyle = '#890149';
       ctx.beginPath();
       ctx.arc(cx, cy, 2, 0, 2 * Math.PI);
       ctx.fill();
@@ -103,9 +103,9 @@ export const CompareView: React.FC<CompareViewProps> = ({
   };
 
   const panels = [
-    { label: 'AI Prediction', sub: modelName, ref: predRef, color: '#00f0ff' },
-    { label: 'GLORYS Truth', sub: 'Reanalysis Reference', ref: truthRef, color: '#ff006e' },
-    { label: 'Error (Pred − Truth)', sub: `RMSE: ${rmse.toFixed(3)}°C`, ref: errRef, color: '#ffb703' },
+    { label: 'AI Prediction', sub: modelName, ref: predRef, color: '#890149' },
+    { label: 'GLORYS Truth', sub: 'Reanalysis Reference', ref: truthRef, color: '#54002c' },
+    { label: 'Error (Pred − Truth)', sub: `RMSE: ${rmse.toFixed(3)}°C`, ref: errRef, color: '#890149' },
   ];
 
   return (
@@ -115,11 +115,11 @@ export const CompareView: React.FC<CompareViewProps> = ({
           <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Comparative Analysis
           </div>
-          <div style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff' }}>
-            <span style={{ color: 'var(--cyan-glow)' }}>Reconstruction</span> vs <span style={{ color: 'var(--coral-hot)' }}>GLORYS</span> at {depth_m}m
+          <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-heading)' }}>
+            <span style={{ color: 'var(--primary)' }}>Reconstruction</span> vs <span style={{ color: 'var(--text-secondary)' }}>GLORYS</span> at {depth_m}m
           </div>
         </div>
-        <div className="badge badge-teal">
+        <div className="badge badge-magenta">
           RMSE {rmse.toFixed(3)}°C
         </div>
       </div>
@@ -128,7 +128,7 @@ export const CompareView: React.FC<CompareViewProps> = ({
         {panels.map(p => (
           <div key={p.label}>
             <div style={{ marginBottom: '6px' }}>
-              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: p.color }}>{p.label}</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 700, color: p.color }}>{p.label}</span>
               <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginLeft: '6px' }}>{p.sub}</span>
             </div>
             <div className="map-canvas-wrapper">
@@ -145,16 +145,16 @@ export const CompareView: React.FC<CompareViewProps> = ({
       {/* Color legend */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', gap: '12px', flexWrap: 'wrap' }}>
         <div className="colorbar" style={{ flex: 1 }}>
-          <span>4°C</span>
+          <span style={{ fontWeight: 600 }}>4°C</span>
           <div className="colorbar-gradient" />
-          <span>31°C</span>
+          <span style={{ fontWeight: 600 }}>31°C</span>
         </div>
         <div className="colorbar" style={{ flex: 1 }}>
-          <span style={{ color: '#4488ff' }}>-1.5°C</span>
+          <span style={{ color: '#890149', fontWeight: 600 }}>-1.5°C</span>
           <div className="colorbar-gradient" style={{
-            background: 'linear-gradient(90deg, #1e44aa, #c8c8ff, #ffffff, #ffc8c8, #ff2222)',
+            background: 'linear-gradient(90deg, #890149 0%, #df94bc 35%, #F3F3E7 50%, #df94bc 65%, #890149 100%)',
           }} />
-          <span style={{ color: '#ff4444' }}>+1.5°C</span>
+          <span style={{ color: '#890149', fontWeight: 600 }}>+1.5°C</span>
         </div>
       </div>
     </div>

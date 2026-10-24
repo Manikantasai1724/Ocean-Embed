@@ -39,10 +39,10 @@ const REGIONS = [
 ];
 
 const CHANNELS = [
-  { name: 'SST (L4)', value: '28.4°C', color: '#ff006e' },
-  { name: 'SSS (L4)', value: '35.2 PSU', color: '#00f0ff' },
-  { name: 'SLA (Alt)', value: '+0.08 m', color: '#06d6a0' },
-  { name: 'CCMP Winds', value: '6.2 m/s', color: '#ffb703' },
+  { name: 'SST (L4)', value: '28.4°C', color: '#890149' },
+  { name: 'SSS (L4)', value: '35.2 PSU', color: '#b82d77' },
+  { name: 'SLA (Alt)', value: '+0.08 m', color: '#54002c' },
+  { name: 'CCMP Winds', value: '6.2 m/s', color: '#e096bf' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -65,13 +65,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   // Categorize current depth zone
   let zoneName = 'Epipelagic';
-  let zoneColor = '#00f0ff';
+  let zoneColor = '#890149';
   if (currentDepth >= 50 && currentDepth <= 200) {
     zoneName = 'Thermocline';
-    zoneColor = '#ffb703';
+    zoneColor = '#b82d77';
   } else if (currentDepth > 200) {
     zoneName = 'Mesopelagic';
-    zoneColor = '#3a86ff';
+    zoneColor = '#54002c';
   }
 
   return (
@@ -120,15 +120,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
               fontSize: '1.6rem',
               fontWeight: 800,
               fontFamily: 'var(--font-mono)',
-              color: '#ffffff'
+              color: 'var(--text-heading)'
             }}>
               {currentDepth}
             </span>
-            <span style={{ fontSize: '0.8rem', color: 'var(--cyan-glow)', fontWeight: 500 }}>m</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>m</span>
           </div>
           <span className="zone-badge" style={{
-            background: `${zoneColor}15`,
-            border: `1px solid ${zoneColor}40`,
+            background: `${zoneColor}18`,
+            border: `1px solid ${zoneColor}50`,
             color: zoneColor,
           }}>
             <Thermometer size={10} />
@@ -212,8 +212,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             width: '10px',
             height: '10px',
             borderRadius: '50%',
-            background: 'var(--cyan-glow)',
-            boxShadow: '0 0 10px rgba(0,240,255,0.4)',
+            background: 'var(--primary)',
+            boxShadow: '0 0 10px rgba(137,1,73,0.4)',
             flexShrink: 0,
           }} />
           <div>
@@ -221,7 +221,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               fontFamily: 'var(--font-mono)',
               fontWeight: 700,
               fontSize: '0.9rem',
-              color: '#ffffff',
+              color: 'var(--text-heading)',
             }}>
               {pinnedCoord.lat.toFixed(2)}°N, {pinnedCoord.lon.toFixed(2)}°E
             </div>

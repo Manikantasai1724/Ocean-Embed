@@ -21,7 +21,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(3, 7, 18, 0.85)',
+      backgroundColor: 'rgba(36, 1, 20, 0.75)',
       backdropFilter: 'blur(10px)',
       display: 'flex',
       alignItems: 'center',
@@ -36,8 +36,8 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        border: '1px solid rgba(0, 240, 255, 0.25)',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8)',
+        border: '1px solid var(--primary)',
+        boxShadow: '0 20px 50px rgba(137, 1, 73, 0.35)',
       }}>
         {/* Modal Header */}
         <div style={{
@@ -48,9 +48,9 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
           alignItems: 'center'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Award size={22} color="var(--cyan-glow)" />
+            <Award size={22} color="var(--primary)" />
             <div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#ffffff' }}>
+              <div style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-heading)' }}>
                 OceanEmbed Model Verification & Physical Benchmarks
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
@@ -78,7 +78,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
           display: 'flex',
           gap: '8px',
           padding: '12px 24px',
-          background: 'rgba(0, 0, 0, 0.2)',
+          background: 'var(--primary-soft)',
           borderBottom: '1px solid var(--border-subtle)'
         }}>
           <button
@@ -108,7 +108,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
               width: '6px',
               height: '6px',
               borderRadius: '50%',
-              background: 'var(--teal-glow)'
+              background: 'var(--primary)'
             }} />
           </button>
         </div>
@@ -123,7 +123,7 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
 
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', fontFamily: 'var(--font-mono)' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-glass)', textAlign: 'left', color: 'var(--text-secondary)' }}>
+                  <tr style={{ borderBottom: '1px solid var(--border-glass)', textAlign: 'left', color: 'var(--primary)' }}>
                     <th style={{ padding: '8px' }}>Depth (m)</th>
                     <th style={{ padding: '8px' }}>Attention RMSE</th>
                     <th style={{ padding: '8px' }}>Direct CNN RMSE</th>
@@ -150,15 +150,15 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                     { d: 700, attn: 0.024, cnn: 0.007, clim: 0.000, ss: 'N/A', r: 0.000 },
                     { d: 1000, attn: 0.026, cnn: 0.009, clim: 0.000, ss: 'N/A', r: 0.000 },
                   ].map(row => (
-                    <tr key={row.d} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                      <td style={{ padding: '8px', fontWeight: 600, color: '#ffffff' }}>{row.d}m</td>
-                      <td style={{ padding: '8px', color: 'var(--cyan-glow)' }}>{row.attn.toFixed(3)}°C</td>
-                      <td style={{ padding: '8px', color: 'var(--teal-glow)' }}>{row.cnn.toFixed(3)}°C</td>
+                    <tr key={row.d} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <td style={{ padding: '8px', fontWeight: 600, color: 'var(--text-heading)' }}>{row.d}m</td>
+                      <td style={{ padding: '8px', color: 'var(--primary)', fontWeight: 600 }}>{row.attn.toFixed(3)}°C</td>
+                      <td style={{ padding: '8px', color: 'var(--text-secondary)' }}>{row.cnn.toFixed(3)}°C</td>
                       <td style={{ padding: '8px', color: 'var(--text-muted)' }}>{row.clim.toFixed(3)}°C</td>
-                      <td style={{ padding: '8px', color: row.ss.startsWith('+') ? 'var(--teal-glow)' : 'var(--text-secondary)' }}>
+                      <td style={{ padding: '8px', color: row.ss.startsWith('+') ? 'var(--primary)' : 'var(--text-secondary)', fontWeight: row.ss.startsWith('+') ? 700 : 400 }}>
                         {row.ss}
                       </td>
-                      <td style={{ padding: '8px' }}>{row.r.toFixed(3)}</td>
+                      <td style={{ padding: '8px', color: 'var(--text-main)' }}>{row.r.toFixed(3)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -173,8 +173,8 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '10px' }}>
-                  <div style={{ fontWeight: 700, color: 'var(--cyan-glow)', marginBottom: '8px' }}>
+                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '10px' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--primary)', marginBottom: '8px' }}>
                     Arabian Sea (5°N–26°N, 50°E–76°E)
                   </div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
@@ -184,8 +184,8 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                   </div>
                 </div>
 
-                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: '10px' }}>
-                  <div style={{ fontWeight: 700, color: 'var(--teal-glow)', marginBottom: '8px' }}>
+                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-glass)', padding: '16px', borderRadius: '10px' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--primary)', marginBottom: '8px' }}>
                     Bay of Bengal (5°N–22°N, 80°E–98°E)
                   </div>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
@@ -201,8 +201,8 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
           {activeTab === 'argo' && (
             <div>
               <div style={{
-                background: 'rgba(255, 183, 3, 0.08)',
-                border: '1px solid rgba(255, 183, 3, 0.3)',
+                background: 'rgba(137, 1, 73, 0.08)',
+                border: '1px solid rgba(137, 1, 73, 0.3)',
                 padding: '14px 18px',
                 borderRadius: '10px',
                 marginBottom: '20px',
@@ -210,29 +210,29 @@ export const MetricsModal: React.FC<MetricsModalProps> = ({
                 gap: '12px',
                 alignItems: 'flex-start'
               }}>
-                <ShieldAlert size={22} color="var(--amber-warn)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <ShieldAlert size={22} color="var(--primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                  <strong style={{ color: 'var(--amber-warn)' }}>Physical Independence Caveat:</strong><br />
+                  <strong style={{ color: 'var(--primary)' }}>Physical Independence Caveat:</strong><br />
                   Numerical ocean reanalysis systems (such as Copernicus GLORYS12V1) actively assimilate both satellite observations (SLA, SST) and in-situ Argo profiling floats via Kalman filter analysis. Thus, GLORYS is a reanalysis model and not an independent physical reference. Autonomous in-situ Argo CTD profiles represent true physical ground truth (unbiased measurements). Validating directly against collocated Argo profiles verifies real-world generalization beyond the assimilated GLORYS grid.
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '18px' }}>
-                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Collocated Match Count</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#ffffff' }}>19 Profiles</div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--teal-glow)' }}>≤ 12h & ≤ 25km radius</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-heading)' }}>19 Profiles</div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--primary)' }}>≤ 12h & ≤ 25km radius</div>
                 </div>
 
-                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Quality Control Flags</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--cyan-glow)' }}>Flags 1 & 2</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)' }}>Flags 1 & 2</div>
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Good / Probably Good only</div>
                 </div>
 
-                <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', padding: '12px', borderRadius: '8px', textAlign: 'center' }}>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Thermocline Argo RMSE</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--teal-glow)' }}>0.121°C</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--primary)' }}>0.121°C</div>
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>at 75m target depth</div>
                 </div>
               </div>

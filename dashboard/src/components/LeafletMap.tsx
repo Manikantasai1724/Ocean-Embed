@@ -20,17 +20,18 @@ interface LeafletMapProps {
   modelName: string;
   pinnedCoord: { lat: number; lon: number };
   onPinCoord: (lat: number, lon: number) => void;
+  theme?: 'light' | 'dark';
 }
 
-// Custom cyan pin marker for the selected location
+// Deep Magenta pin marker with Alabaster border
 const pinIcon = L.divIcon({
   className: '',
   html: `<div style="
     width: 16px; height: 16px;
-    background: #00f0ff;
-    border: 2px solid #ffffff;
+    background: #890149;
+    border: 2px solid #F3F3E7;
     border-radius: 50%;
-    box-shadow: 0 0 12px rgba(0,240,255,0.6), 0 0 24px rgba(0,240,255,0.3);
+    box-shadow: 0 0 12px rgba(137,1,73,0.7), 0 0 24px rgba(137,1,73,0.35);
     transform: translate(-8px, -8px);
   "></div>`,
   iconSize: [16, 16],
@@ -74,6 +75,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   modelName,
   pinnedCoord,
   onPinCoord,
+  theme = 'light',
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [overlayUrl, setOverlayUrl] = useState<string>('');
@@ -93,7 +95,6 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   useEffect(() => {
     if (!predictionGrid || predictionGrid.length === 0 || H === 0 || W === 0) return;
 
-    // Create offscreen canvas
     if (!canvasRef.current) {
       canvasRef.current = document.createElement('canvas');
     }
@@ -107,7 +108,6 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
     const data = imgData.data;
 
     for (let i = 0; i < H; i++) {
-      // Flip vertically: canvas row 0 = north = highest lat index
       const gridRow = H - 1 - i;
       const row = predictionGrid[gridRow];
       for (let j = 0; j < W; j++) {
@@ -117,8 +117,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         data[idx] = color.r;
         data[idx + 1] = color.g;
         data[idx + 2] = color.b;
-        // Make land transparent so the basemap shows through
-        data[idx + 3] = (val === null || val === undefined) ? 0 : 210;
+        data[idx + 3] = (val === null || val === undefined) ? 0 : 215;
       }
     }
     ctx.putImageData(imgData, 0, 0);
@@ -126,6 +125,13 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   }, [predictionGrid, H, W]);
 
   const mapCenter: [number, number] = useMemo(() => [pinnedCoord.lat, pinnedCoord.lon], [pinnedCoord.lat, pinnedCoord.lon]);
+  const isDark = theme === 'dark';
+  const tileBase = isDark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png';
+  const tileLabels = isDark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png';
 
   return (
     <div className="map-container" style={{ borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--border-glass)' }}>
@@ -138,33 +144,31 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         maxBounds={[[0, 35], [35, 115]]}
         maxBoundsViscosity={1.0}
       >
-        {/* Dark ocean-themed base tile layer from CartoDB */}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png"
+          key={tileBase}
+          url={tileBase}
           attribution='&copy; <a href="https://carto.com/">CARTO</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
         />
 
-        {/* Temperature heatmap overlay — semi-transparent so coastlines show */}
         {overlayUrl && (
           <ImageOverlay
             url={overlayUrl}
             bounds={bounds}
-            opacity={0.85}
+            opacity={0.88}
             zIndex={10}
           />
         )}
 
-        {/* Labels on top of the heatmap */}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
+          key={tileLabels}
+          url={tileLabels}
           zIndex={20}
         />
 
-        {/* Pinned coordinate marker */}
         <Marker position={[pinnedCoord.lat, pinnedCoord.lon]} icon={pinIcon}>
           <Popup>
-            <div style={{ color: '#f0f6fc', lineHeight: 1.6 }}>
-              <div style={{ fontWeight: 700, color: '#00f0ff', marginBottom: '4px' }}>
+            <div style={{ color: 'var(--text-main)', lineHeight: 1.6 }}>
+              <div style={{ fontWeight: 700, color: 'var(--primary)', marginBottom: '4px' }}>
                 📍 Profile Location
               </div>
               <div>Lat: <strong>{pinnedCoord.lat.toFixed(2)}°N</strong></div>
@@ -187,8 +191,8 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         right: '12px',
         maxWidth: '340px',
         zIndex: 1000,
-        background: 'rgba(10, 20, 42, 0.92)',
-        backdropFilter: 'blur(12px)',
+        background: 'var(--bg-glass-card)',
+        backdropFilter: 'blur(16px)',
         border: '1px solid var(--border-glass)',
         borderRadius: 'var(--radius-sm)',
         padding: '8px 12px',
@@ -198,10 +202,11 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         fontSize: '0.7rem',
         fontFamily: 'var(--font-mono)',
         color: 'var(--text-secondary)',
+        boxShadow: 'var(--shadow-md)',
       }}>
-        <span style={{ whiteSpace: 'nowrap' }}>4°C</span>
+        <span style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>4°C</span>
         <div className="colorbar-gradient" />
-        <span style={{ whiteSpace: 'nowrap' }}>31°C</span>
+        <span style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>31°C</span>
         <span style={{ color: 'var(--text-muted)', marginLeft: '4px', whiteSpace: 'nowrap' }}>
           @ {depth_m}m
         </span>
@@ -213,15 +218,16 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         top: '12px',
         right: '12px',
         zIndex: 1000,
-        background: 'rgba(10, 20, 42, 0.92)',
-        backdropFilter: 'blur(12px)',
+        background: 'var(--bg-glass-card)',
+        backdropFilter: 'blur(16px)',
         border: '1px solid var(--border-glass)',
         borderRadius: 'var(--radius-sm)',
         padding: '6px 12px',
         fontSize: '0.7rem',
         fontFamily: 'var(--font-mono)',
-        color: 'var(--cyan-glow)',
-        fontWeight: 600,
+        color: 'var(--primary)',
+        fontWeight: 700,
+        boxShadow: 'var(--shadow-sm)',
       }}>
         {modelName} · {depth_m}m
       </div>

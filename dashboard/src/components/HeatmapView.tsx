@@ -89,13 +89,13 @@ export const HeatmapView: React.FC<HeatmapViewProps> = ({
       const canvasY = H - 1 - latIdx;
       const canvasX = lonIdx;
 
-      ctx.strokeStyle = '#ffffff';
+      ctx.strokeStyle = '#F3F3E7';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.arc(canvasX, canvasY, 4, 0, 2 * Math.PI);
       ctx.stroke();
 
-      ctx.fillStyle = '#00f0ff';
+      ctx.fillStyle = '#890149';
       ctx.beginPath();
       ctx.arc(canvasX, canvasY, 2, 0, 2 * Math.PI);
       ctx.fill();
